@@ -14,7 +14,7 @@ def filter(elem, doc):
     if type(elem) == Str and elem.text == "BOLD":
         return Strong(Str(elem.text))
 
-    if type(elem.parent) == Header and elem.parent.level <= 3:
+    if type(elem) == Header and elem.level < 4:
         return elem.walk(upper)
 
 def upper(elem, doc):

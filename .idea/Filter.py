@@ -1,25 +1,26 @@
+#!/usr/bin/env python
 from panflute import *
 import re, sys
-headers = set
+headers = set()
 
 
 def filter(elem, doc):
     if type(elem) == Header:
-        for elem in headers:
-            sys.stderr.write("Error this heading repeats!" + elem.text)
+        header = stringify(elem)
+        if header in headers:
+            sys.stderr.write("Error this heading repeats!" + header)
+        else: headers.add(header)
 
-        headers.add(elem)
+    if type(elem) == Str and elem.text == "BOLD":
+        return Strong(Str(elem.text))
 
-    if elem.text == "BOLD":
-        elem.text = Strong(elem.text)
+    if type(elem.parent) == Header and elem.parent.level <= 3:
+        return elem.walk(upper)
 
-    if type(elem) == Header and elem.level <= 3:
-        elem.text = elem.text.upper()
-        return elem
-
-    def main(doc=None):
-        return run_filter(caps, doc=doc)
+def upper(elem, doc):
+    if type(elem) == Str:
+        return Str(elem.text.upper)
 
 
 if __name__ == "__main__":
-    main()
+    run_filter(filter)
